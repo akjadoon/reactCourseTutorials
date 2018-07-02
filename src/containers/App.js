@@ -3,13 +3,22 @@ import classes from './App.css';
 
 import Persons from '../components/Persons/Persons';
 import Cockpit from '../components/Cockpit/Cockpit';
-import WithClass from '../hoc/WithClass';
+import withClass from '../hoc/withClass';
 
 class App extends Component {
 
   constructor(props) {
     super(props);
     console.log('[App.js] Inside Constructor', props);
+    this.state = {
+      persons: [
+        {id: "haa8", name: "Max", age: 28},
+        {id: "asj2", name: "Manu", age: 18},
+        {id: "ajj2", name: "Lee", age: 30}
+      ],
+      showPersons: false,
+      toggleClicked: 0
+    }
   }
 
   componentWillMount() {
@@ -25,14 +34,6 @@ class App extends Component {
     nextState.showPersons !== this.state.showPersons ;
   }
 
-  state = {
-    persons: [
-      {id: "haa8", name: "Max", age: 28},
-      {id: "asj2", name: "Manu", age: 18},
-      {id: "ajj2", name: "Lee", age: 30}
-    ],
-    showPersons: false
-  }
 
   nameChangedHandler = (event, id) => { 
     const personIndex = this.state.persons.findIndex(p => {
@@ -53,7 +54,12 @@ class App extends Component {
   }
   togglePersonsHandler = () => {
     const doesShow = this.state.showPersons;
-    this.setState({showPersons: !doesShow});
+    this.setState( (prevState, props) => {
+      return {
+        showPersons: !doesShow,
+        toggleClicked: prevState.toggleClicked + 1
+      }
+    });
   }
   deletePersonHandler = (personIndex) => {
     const persons = [...this.state.persons];
@@ -78,7 +84,7 @@ class App extends Component {
 
     console.log("[App.js] Inside Component render");
     return (
-        <WithClass classes={classes.App}>
+        <React.Fragment>
             <button onClick={() => {this.setState({showPersons: true})} }>Show Persons</button>
             <Cockpit
               appTitle={this.props.title}
@@ -86,9 +92,9 @@ class App extends Component {
               persons={this.state.persons}
               clicked={this.togglePersonsHandler} />
             {persons}
-        </WithClass>
+        </React.Fragment>
     );
   }
 }
 
-export default App;
+export default withClass(App, classes.App);
